@@ -13,11 +13,10 @@ router
   .get(ProductController.getAllProducts)
   .post(ProductController.createNewProduct)
 
-router.post(
-  '/review/:id',
-  AuthController.verifyUser,
-  ProductController.addProductReview
-)
+router
+  .route('/review/:id')
+  .post(AuthController.verifyUser, ProductController.addProductReview)
+  .patch(AuthController.verifyUser, ProductController.updateReview)
 
 router.route('/product/:id').get(ProductController.getSingleProduct)
 

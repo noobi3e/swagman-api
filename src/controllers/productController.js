@@ -182,3 +182,45 @@ export const addProductReview = async (req, res, next) => {
     next(err)
   }
 }
+
+export const updateReview = async (req, res, next) => {
+  try {
+    const user = req.user
+
+    // product ID
+    const prdId = req.params.id
+
+    // updatedReview
+    const review = req.body.review
+
+    const product = await ProductModel.findById(prdId)
+
+    const reviews = [...product.reviews]
+
+    // finding user review
+    const index = reviews.findIndex(
+      (el) => el.userId.toString() === user._id.toString()
+    )
+    const userData = {
+      userId: user._id,
+      reviewDate: new Date(),
+      username: user.fname,
+      rating: product.reviews[index].rating,
+      review,
+    }
+    reviews.splice(index, 1, userData)
+
+    product.reviews = reviews
+    const newProduct = await product.save() // saving to database
+
+    res.status(200).json({
+      status: 'Success✅',
+      statusCode: 200,
+      data: {
+        reviews: newProduct.reviews,
+      },
+    })
+  } catch (err) {
+    next(err)
+  }
+}
